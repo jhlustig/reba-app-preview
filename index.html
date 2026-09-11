@@ -175,7 +175,7 @@
   .badge{font-size:10.5px; font-weight:800; letter-spacing:.07em; padding:3px 7px; border-radius:10px; white-space:nowrap;}
   .b-banked{background:#2E7D4F; color:#fff;}
   .b-assert{background:#2E7D4F; color:#fff; opacity:.72;}
-  .b-prog{background:#5B8C5A; color:#fff;}
+  .b-prog{background:#C47B2B; color:#fff;}
   .b-short{background:var(--alert); color:#fff;}
   .b-lock{background:#3A3A36; color:#7A7A72;}
   .sd{padding:8px 12px 10px 60px; border-top:1px dashed var(--line); font-size:13px;
@@ -1201,7 +1201,9 @@ const TOD = ['AM','PM'];
    Called from within tab renderers (e.g. clicking a card in WEEK or TRACKS).
    Must restore the tab bar first since card detail may have replaced its innerHTML. */
 function tab(t){
-  if (state.tab !== t) state.prevTab = state.tab;
+  /* Track where we came from only for cross-tab card navigation
+     (e.g. tapping a card in Tracks to view it in Cards) */
+  state.prevTab = (state.tab !== t) ? state.tab : null;
   state.tab = t;
   if (state.screen !== 'tab') {
     showScreen('tab');
@@ -1242,7 +1244,7 @@ function renderCards(){
   for(const c of DECK.cards){
     if(state.trackFilter && c.track!==state.trackFilter) continue;
     const ty = c.type==='stage'?'':(c.type==='gate'?'GATE':(c.type==='reference'?'REF':'TRACK'));
-    h += `<div class="cardrow" onclick="state.openCard='${c.code}';render()">
+    h += `<div class="cardrow" onclick="state.prevTab=null;state.openCard='${c.code}';render()">
       <div class="stripe" style="background:${c.type==='gate'?'var(--alert)':c.color}"></div>
       <div class="code">${c.code}</div><div class="ti">${esc(c.title)}</div><div class="ty">${ty}</div></div>`;
   }
