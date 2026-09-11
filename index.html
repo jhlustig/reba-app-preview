@@ -32,9 +32,9 @@
             aspect-ratio:1; box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer;
             transition:transform .1s ease;}
   .dog-card:active{transform:scale(.97);}
-  .dog-avatar{width:72px; height:72px; border-radius:50%; background:#3A3A36;
+  .dog-avatar{width:96px; height:96px; border-radius:50%; background:#3A3A36;
               display:flex; align-items:center; justify-content:center;
-              font-size:32px; overflow:hidden; flex-shrink:0; color:var(--muted);}
+              font-size:38px; overflow:hidden; flex-shrink:0; color:var(--muted);}
   .dog-avatar img{width:100%; height:100%; object-fit:cover;}
   .dog-info{text-align:center; min-width:0;}
   .dog-name{font-size:18px; font-weight:700;}
@@ -1229,8 +1229,13 @@ function renderCards(){
     return;
   }
   if(state.openCard){ v.innerHTML = cardDetail(DECK.cards.find(c=>c.code===state.openCard)); return; }
+  /* Restore standard tab bar when showing the card list */
+  const tabBar = document.querySelector('.tab-bar');
+  if (tabBar) {
+    tabBar.innerHTML = '<button class="tab-back" onclick="haptic();goHub()" aria-label="Back">&#8249;</button><span class="tab-title" id="tabTitle">Cards</span>';
+  }
   let h = '<div class="chips">';
-  h += `<button class="chip ${!state.trackFilter?'on':''}" style="${!state.trackFilter?'background:var(--ink)':''}" onclick="haptic();state.trackFilter=null;render()">ALL</button>`;
+  h += `<button class="chip ${!state.trackFilter?'on':''}" style="${!state.trackFilter?'background:var(--accent)':''}" onclick="haptic();state.trackFilter=null;render()">ALL</button>`;
   for(const t of TRACKS)
     h += `<button class="chip ${state.trackFilter===t.tag?'on':''}" style="${state.trackFilter===t.tag?'background:'+t.color:''}" onclick="haptic();state.trackFilter='${t.tag}';render()">${t.tag}</button>`;
   h += '</div>';
