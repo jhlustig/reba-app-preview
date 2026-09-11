@@ -26,22 +26,22 @@
   .home-header{padding:56px 20px 12px; display:flex; justify-content:space-between; align-items:baseline;}
   .home-title{font-size:34px; font-weight:800; letter-spacing:-.02em;}
   .home-build{font-size:12px; color:var(--muted);}
-  .home-dogs{padding:0 16px 40px;}
-  .dog-card{display:flex; align-items:center; gap:16px; background:var(--card);
-            border-radius:16px; padding:16px; margin-bottom:12px;
-            box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer;
+  .home-dogs{display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:0 16px 40px;}
+  .dog-card{display:flex; flex-direction:column; align-items:center; justify-content:center;
+            gap:10px; background:var(--card); border-radius:16px; padding:20px 12px;
+            aspect-ratio:1; box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer;
             transition:transform .1s ease;}
   .dog-card:active{transform:scale(.97);}
-  .dog-avatar{width:60px; height:60px; border-radius:50%; background:#3A3A36;
+  .dog-avatar{width:72px; height:72px; border-radius:50%; background:#3A3A36;
               display:flex; align-items:center; justify-content:center;
-              font-size:28px; overflow:hidden; flex-shrink:0; color:var(--muted);}
+              font-size:32px; overflow:hidden; flex-shrink:0; color:var(--muted);}
   .dog-avatar img{width:100%; height:100%; object-fit:cover;}
-  .dog-info{flex:1; min-width:0;}
-  .dog-name{font-size:20px; font-weight:700;}
-  .dog-status{font-size:13px; color:var(--muted); margin-top:2px;}
-  .dog-add{display:flex; align-items:center; justify-content:center; gap:10px;
+  .dog-info{text-align:center; min-width:0;}
+  .dog-name{font-size:18px; font-weight:700;}
+  .dog-status{font-size:12px; color:var(--muted); margin-top:2px;}
+  .dog-add{display:flex; align-items:center; justify-content:center; gap:8px;
            background:none; border:2px dashed #3A3A36; border-radius:16px;
-           padding:20px; margin-top:4px; color:var(--muted); font-size:16px;
+           padding:20px; color:var(--muted); font-size:15px; aspect-ratio:1;
            font-weight:600; cursor:pointer; width:100%;
            transition:transform .1s ease;}
   .dog-add:active{transform:scale(.97);}
@@ -175,7 +175,7 @@
   .badge{font-size:10.5px; font-weight:800; letter-spacing:.07em; padding:3px 7px; border-radius:10px; white-space:nowrap;}
   .b-banked{background:#2E7D4F; color:#fff;}
   .b-assert{background:#2E7D4F; color:#fff; opacity:.72;}
-  .b-prog{background:var(--ink); color:#fff;}
+  .b-prog{background:#5B8C5A; color:#fff;}
   .b-short{background:var(--alert); color:#fff;}
   .b-lock{background:#3A3A36; color:#7A7A72;}
   .sd{padding:8px 12px 10px 60px; border-top:1px dashed var(--line); font-size:13px;
@@ -270,7 +270,7 @@
   /* LOG toggle removed — Log and History are separate hub tiles now */
   /* session history — grid of tiles */
   .hist-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;}
-  .hist-tile{background:var(--card); border:0; border-radius:14px; padding:14px 8px;
+  .hist-tile{background:#2C2C28; border:0; border-radius:14px; padding:14px 8px;
              text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.3); cursor:pointer;
              font-family:inherit; color:var(--ink); transition:transform .1s ease;}
   .hist-tile:active{transform:scale(.95);}
@@ -284,7 +284,7 @@
   .hist-detail-header{margin-bottom:14px;}
   .hist-detail-date{font-size:22px; font-weight:800;}
   .hist-detail-meta{font-size:14px; color:var(--muted); margin-top:2px;}
-  .hist-card{background:var(--card); border-radius:14px; padding:14px 16px; margin-bottom:10px;
+  .hist-card{background:#2C2C28; border-radius:14px; padding:14px 16px; margin-bottom:10px;
              box-shadow:0 2px 8px rgba(0,0,0,.3);}
   .hist-card-head{padding-left:10px; display:flex; align-items:baseline; gap:8px;}
   .hist-card-code{font-weight:800; font-size:15px;}
@@ -979,9 +979,8 @@ function renderHome() {
       <div class="dog-avatar">${dogAvatarHTML(d.name)}</div>
       <div class="dog-info">
         <div class="dog-name">${esc(d.name)}</div>
-        <div class="dog-status">${current ? esc(current) : esc(d.breed || 'Tap to open')}</div>
+        <div class="dog-status">${current ? esc(current) : esc(d.breed || '')}</div>
       </div>
-      <span style="color:var(--line);font-size:22px">&#8250;</span>
     </div>`;
   }
   h += `<button class="dog-add" onclick="haptic();promptAddDog()">+ Add Dog</button>`;
@@ -1030,12 +1029,12 @@ function renderHub() {
     history: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>',
   };
   const colors = {
-    week: '#3F5A6B',     /* slate */
-    cards: '#2F4A32',    /* forest green */
-    tracks: '#7A5240',   /* clay */
-    log: '#5B8C5A',      /* accent green */
-    next: '#8C3B2A',     /* rust */
-    history: '#3B426E',  /* indigo */
+    week: 'rgba(63,90,107,.75)',     /* slate */
+    cards: 'rgba(47,74,50,.75)',     /* forest green */
+    tracks: 'rgba(122,82,64,.75)',   /* clay */
+    log: 'rgba(91,140,90,.75)',      /* accent green */
+    next: 'rgba(140,59,42,.75)',     /* rust */
+    history: 'rgba(59,66,110,.75)',  /* indigo */
   };
 
   const tiles = [
