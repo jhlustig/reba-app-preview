@@ -259,11 +259,7 @@
   .days-since{font-size:13px; color:var(--muted); text-align:center; margin-bottom:10px; padding:6px 0;}
   /* clear confirm state */
   .copy.confirm-warn{background:#D4440A; color:#fff; border-color:#D4440A;}
-  /* LOG toggle */
-  .log-toggle{display:flex; gap:0; margin:0 0 12px; border:1.5px solid var(--line); border-radius:8px; overflow:hidden;}
-  .log-toggle button{flex:1; padding:10px 0; border:0; background:#fff; font-size:13px; font-weight:700;
-    letter-spacing:.08em; color:var(--muted); cursor:pointer;}
-  .log-toggle button.on{background:var(--ink); color:#fff;}
+  /* LOG toggle removed — Log and History are separate hub tiles now */
   /* session history — grid of tiles */
   .hist-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;}
   .hist-tile{background:var(--card); border:0; border-radius:14px; padding:14px 8px;
@@ -929,12 +925,12 @@ function goHub() {
   renderHub();
 }
 
-function goTab(t) {
+function goTab(t, titleOverride) {
   state.tab = t;
   state.openCard = null;
   showScreen('tab');
   const titles = {week:'Week', cards:'Cards', tracks:'Tracks', log:'Log'};
-  document.getElementById('tabTitle').textContent = titles[t] || t;
+  document.getElementById('tabTitle').textContent = titleOverride || titles[t] || t;
   for (const v of ['vWeek','vCards','vTracks','vLog']) {
     document.getElementById(v).style.display = v === 'v' + t.charAt(0).toUpperCase() + t.slice(1) ? '' : 'none';
   }
@@ -1015,9 +1011,9 @@ function renderHub() {
     { icon: '📅', label: 'WEEK', sub: daySub || 'Plan your week', action: "goTab('week')" },
     { icon: '🃏', label: 'CARDS', sub: DECK.cards.length + ' cards', action: "goTab('cards')" },
     { icon: '📊', label: 'TRACKS', sub: currentCards.length ? currentCards.join(', ') : 'View progress', action: "goTab('tracks')" },
-    { icon: '📝', label: 'LOG', sub: 'Log a session', action: "goTab('log');setLogMode('log')" },
+    { icon: '📝', label: 'LOG', sub: 'Log a session', action: "state.logMode='log';goTab('log')" },
     { icon: '🎯', label: 'NEXT', sub: 'Suggested session', action: "goTab('week')" },
-    { icon: '📖', label: 'HISTORY', sub: sessionCount + ' sessions', action: "goTab('log');setLogMode('history')" },
+    { icon: '📖', label: 'HISTORY', sub: sessionCount + ' sessions', action: "state.logMode='history';state.histDetail=null;goTab('log','History')" },
   ];
 
   let h = '';
@@ -1937,15 +1933,9 @@ function renderLog(){
   const v = document.getElementById('vLog');
   let h = '';
 
-  /* toggle: Log Session / History */
-  h += `<div class="log-toggle">
-    <button class="${state.logMode==='log'?'on':''}" onclick="haptic();setLogMode('log')">LOG SESSION</button>
-    <button class="${state.logMode==='history'?'on':''}" onclick="haptic();setLogMode('history')">HISTORY</button></div>`;
-
   if(state.logMode==='history'){
     h += renderHistory();
     v.innerHTML = h;
-    /* hide fab in history mode */
     const fab = document.getElementById('fabExport');
     if(fab) fab.classList.remove('show');
     return;
