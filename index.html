@@ -17,10 +17,12 @@
     --card-hover:#2C2C28; --surface:#1E1E1C;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html{overscroll-behavior:none;}
   body{margin:0; font-family:-apple-system,system-ui,'Helvetica Neue',Helvetica,Arial,sans-serif;
        background:var(--bg); color:var(--ink); font-size:17px; line-height:1.47;
        padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
-       touch-action:pan-x pan-y; -webkit-text-size-adjust:100%;}
+       touch-action:pan-x pan-y; -webkit-text-size-adjust:100%;
+       overscroll-behavior-y:none; -webkit-overflow-scrolling:touch;}
   /* ── screens ── */
   .screen{min-height:100vh; min-height:100dvh;}
   /* ── home screen ── */
@@ -2356,6 +2358,20 @@ recomputeState();
     }
   } catch (e) { console.warn('Firestore sync skipped (offline?):', e); }
 })();
+
+/* ── Block iOS native pull-to-refresh (overscroll reload) ─────────────── */
+document.addEventListener('touchmove', function(e) {
+  if ((window.scrollY || document.documentElement.scrollTop || 0) <= 0) {
+    const touch = e.touches[0];
+    if (touch && touch.clientY > (this._lastTouchY || 0)) {
+      e.preventDefault();
+    }
+  }
+  this._lastTouchY = e.touches[0] ? e.touches[0].clientY : 0;
+}, {passive: false});
+document.addEventListener('touchstart', function(e) {
+  this._lastTouchY = e.touches[0] ? e.touches[0].clientY : 0;
+}, {passive: true});
 
 /* ---------- pull to refresh — CARDS AND WEEK ONLY ---------- */
 (function(){
