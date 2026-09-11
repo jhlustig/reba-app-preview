@@ -1,6 +1,6 @@
 {
-  "name": "Reba \u2014 Cards & Session Log",
-  "short_name": "Reba",
+  "name": "Reba Preview",
+  "short_name": "Reba v2",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
