@@ -72,6 +72,10 @@
            background:rgba(242,241,237,.85); -webkit-backdrop-filter:blur(12px);
            backdrop-filter:blur(12px); border-bottom:0.5px solid var(--line);}
   .tab-title{font-size:17px; font-weight:700; flex:1;}
+  .card-step{border:0; background:none; font-size:14px; font-weight:600; color:var(--accent);
+             padding:6px 10px; cursor:pointer; min-height:44px;}
+  .card-step:active{opacity:.5;}
+  .card-step-end{width:50px;}
   main{padding:12px 12px 90px;}
   .chips{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;}
   .chip{padding:11px 16px; border:1.5px solid var(--line); border-radius:22px; background:#fff;
@@ -105,14 +109,6 @@
   .check-progress{height:4px; background:var(--line); border-radius:2px; flex:0 0 60px;}
   .check-fill{height:100%; background:var(--accent); border-radius:2px; transition:width .3s;}
   .capnote{background:#FBF6E9; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:14px; margin-top:10px;}
-  /* card nav */
-  .card-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
-            padding:6px 4px; background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06);}
-  .card-nav-btn{border:0; background:none; font-size:15px; font-weight:600; color:var(--accent);
-                padding:8px 14px; cursor:pointer; min-height:44px;}
-  .card-nav-btn:active{opacity:.6;}
-  .card-nav-cur{font-size:14px; font-weight:800; color:var(--muted); letter-spacing:.04em;}
-  .card-nav-end{width:60px;}
   /* requires links */
   .req-link{display:flex; align-items:center; gap:8px; width:100%; padding:10px 0;
             border:0; background:none; text-align:left; font:inherit; cursor:pointer;
@@ -155,16 +151,7 @@
   .ckline input[type=number]{width:64px;}
   .ckline .of{color:var(--muted); font-weight:700;}
   .warn{color:var(--alert); font-weight:700; font-size:14px; margin-top:8px;}
-  .crumb1{display:flex; align-items:center; gap:6px; margin-bottom:6px;}
-  .crumb1 .bigbtn{margin-left:auto;}
-  .crumb2{display:flex; align-items:center; justify-content:space-between; gap:8px;
-          margin-bottom:10px; padding:6px 8px; background:var(--gray);
-          border:1px solid var(--line); border-radius:10px;}
-  .crumbbtn{background:none; border:0; color:var(--ink); font:inherit; font-size:13px;
-            font-weight:600; padding:4px 6px; cursor:pointer;}
-  /* dead text, not a button — a control that goes where you already are reads as broken */
-  .crumbnow{font-size:13px; font-weight:700; color:var(--muted); letter-spacing:.04em; padding:4px 6px;}
-  .crumbend{font-size:13px; color:var(--line); padding:4px 6px;}
+  /* old breadcrumb classes removed — card nav now in tab bar */
   .export{background:#fff; border:1.5px solid var(--ink); border-radius:10px; padding:12px; margin-top:14px;}
   pre{white-space:pre-wrap; font-size:13px; background:var(--bg); padding:10px; border-radius:8px; max-height:340px; overflow:auto;}
   .go{width:100%; padding:14px; font-size:17px; font-weight:800; color:#fff; background:var(--ink); border:0; border-radius:10px;}
@@ -1211,6 +1198,11 @@ function renderCards(){
     return;
   }
   if(state.openCard){ v.innerHTML = cardDetail(DECK.cards.find(c=>c.code===state.openCard)); return; }
+  /* Restore normal tab bar when returning to card list */
+  const tabBar = document.querySelector('.tab-bar');
+  if (tabBar) {
+    tabBar.innerHTML = `<button class="tab-back" onclick="haptic();goHub()" aria-label="Back">&#8249;</button><span class="tab-title">Cards</span>`;
+  }
   let h = '<div class="chips">';
   h += `<button class="chip ${!state.trackFilter?'on':''}" style="${!state.trackFilter?'background:var(--ink)':''}" onclick="haptic();state.trackFilter=null;render()">ALL</button>`;
   for(const t of TRACKS)
@@ -1233,14 +1225,16 @@ function cardDetail(c){
   const next = i < list.length-1 ? list[i+1] : null;
   const cs = (DECK.state && DECK.state.cards) ? DECK.state.cards[c.code] : null;
 
-  /* ── prev / next nav ── */
-  let h = `<div class="card-nav">` +
-    (prev ? `<button class="card-nav-btn" onclick="haptic();state.openCard='${prev.code}';render()">&#8249; ${prev.code}</button>`
-          : `<span class="card-nav-end"></span>`) +
-    `<span class="card-nav-cur">${c.code}</span>` +
-    (next ? `<button class="card-nav-btn" onclick="haptic();state.openCard='${next.code}';render()">${next.code} &#8250;</button>`
-          : `<span class="card-nav-end"></span>`) +
-    `</div>`;
+  /* Update the tab bar to show card-level navigation */
+  const tabBar = document.querySelector('.tab-bar');
+  if (tabBar) {
+    tabBar.innerHTML = `<button class="tab-back" onclick="haptic();state.openCard=null;render()" aria-label="Back">&#8249;</button>` +
+      (prev ? `<button class="card-step" onclick="haptic();state.openCard='${prev.code}';render()">&#8249; ${prev.code}</button>` : '<span class="card-step-end"></span>') +
+      `<span class="tab-title" style="text-align:center">${c.code}</span>` +
+      (next ? `<button class="card-step" onclick="haptic();state.openCard='${next.code}';render()">${next.code} &#8250;</button>` : '<span class="card-step-end"></span>');
+  }
+
+  let h = '';
 
   /* ── card header ── */
   h += `<div class="detail ${state.bigType?'big':''}"><div class="head" style="background:${accent}">
