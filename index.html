@@ -1231,10 +1231,13 @@ function renderCards(){
     return;
   }
   if(state.openCard){ v.innerHTML = cardDetail(DECK.cards.find(c=>c.code===state.openCard)); return; }
-  /* Restore standard tab bar when showing the card list */
-  const tabBar = document.querySelector('.tab-bar');
-  if (tabBar) {
-    tabBar.innerHTML = '<button class="tab-back" onclick="haptic();goHub()" aria-label="Back">&#8249;</button><span class="tab-title" id="tabTitle">Cards</span>';
+  /* Restore standard tab bar when showing the card list — but only if cards is the active tab,
+     otherwise render() calling all renderers would overwrite the tab bar for other tabs */
+  if (state.tab === 'cards') {
+    const tabBar = document.querySelector('.tab-bar');
+    if (tabBar) {
+      tabBar.innerHTML = '<button class="tab-back" onclick="haptic();goHub()" aria-label="Back">&#8249;</button><span class="tab-title" id="tabTitle">Cards</span>';
+    }
   }
   let h = '<div class="chips">';
   h += `<button class="chip ${!state.trackFilter?'on':''}" style="${!state.trackFilter?'background:var(--accent)':''}" onclick="haptic();state.trackFilter=null;render()">ALL</button>`;
