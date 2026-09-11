@@ -49,8 +49,9 @@
            gap:10px; padding:8px 12px; padding-top:calc(8px + env(safe-area-inset-top));
            background:rgba(242,241,237,.85); -webkit-backdrop-filter:blur(12px);
            backdrop-filter:blur(12px); border-bottom:0.5px solid var(--line);}
-  .hub-back,.tab-back{border:0; background:none; font-size:32px; font-weight:300;
-                      color:var(--accent); padding:0 4px; line-height:1; cursor:pointer;}
+  .hub-back,.tab-back{border:0; background:none; font-size:42px; font-weight:300;
+                      color:var(--accent); padding:4px 8px; line-height:1; cursor:pointer;
+                      min-width:44px; min-height:44px; display:flex; align-items:center;}
   .hub-dog{display:flex; align-items:center; gap:8px; flex:1; min-width:0;}
   .hub-avatar{width:32px; height:32px; border-radius:50%; background:var(--line);
               overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;}
@@ -960,8 +961,9 @@ function renderHub() {
   document.getElementById('hubName').textContent = name;
   document.getElementById('hubAvatar').innerHTML = dogAvatarHTML(name);
 
-  const ST = DECK.state || {};
-  const histAll = (DECK.week && DECK.week.history) || {};
+  const isDeckDog = name.toLowerCase() === (DECK.dog || 'reba').toLowerCase();
+  const ST = isDeckDog ? (DECK.state || {}) : {};
+  const histAll = isDeckDog ? ((DECK.week && DECK.week.history) || {}) : {};
   const histDates = Object.keys(histAll).filter(d => histAll[d].length > 0).sort();
   const today = todayCentral();
   let daySub = '';
@@ -971,18 +973,20 @@ function renderHub() {
   }
 
   const currentCards = ST.tracks ? Object.values(ST.tracks).map(t => t.current).filter(Boolean) : [];
-  const sessionCount = (DECK.sessions || []).length;
+  const sessionCount = isDeckDog ? (DECK.sessions || []).length : 0;
 
   const tiles = [
-    { icon: '📅', label: 'WEEK', sub: daySub || 'Plan your week', tab: 'week' },
-    { icon: '🃏', label: 'CARDS', sub: DECK.cards.length + ' cards', tab: 'cards' },
-    { icon: '📊', label: 'TRACKS', sub: currentCards.length ? currentCards.join(', ') : 'View progress', tab: 'tracks' },
-    { icon: '📝', label: 'LOG', sub: sessionCount + ' sessions', tab: 'log' },
+    { icon: '📅', label: 'WEEK', sub: daySub || 'Plan your week', action: "goTab('week')" },
+    { icon: '🃏', label: 'CARDS', sub: DECK.cards.length + ' cards', action: "goTab('cards')" },
+    { icon: '📊', label: 'TRACKS', sub: currentCards.length ? currentCards.join(', ') : 'View progress', action: "goTab('tracks')" },
+    { icon: '📝', label: 'LOG', sub: 'Log a session', action: "goTab('log');setLogMode('log')" },
+    { icon: '🎯', label: 'NEXT', sub: 'Suggested session', action: "goTab('week')" },
+    { icon: '📖', label: 'HISTORY', sub: sessionCount + ' sessions', action: "goTab('log');setLogMode('history')" },
   ];
 
   let h = '';
   for (const t of tiles) {
-    h += `<button class="hub-tile" onclick="haptic();goTab('${t.tab}')">
+    h += `<button class="hub-tile" onclick="haptic();${t.action}">
       <span class="hub-icon">${t.icon}</span>
       <div class="hub-label">${t.label}</div>
       <div class="hub-sub">${esc(t.sub)}</div>
@@ -1001,25 +1005,113 @@ function editDog() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function() {
-      // Resize to 120x120 to keep localStorage small
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 120; canvas.height = 120;
-        const ctx = canvas.getContext('2d');
-        const s = Math.min(img.width, img.height);
-        ctx.drawImage(img, (img.width-s)/2, (img.height-s)/2, s, s, 0, 0, 120, 120);
-        setDogPhoto(name, canvas.toDataURL('image/jpeg', 0.8));
-        renderHub();
-        renderHome();
-      };
-      img.src = reader.result;
+      showPhotoCropper(name, reader.result);
     };
     reader.readAsDataURL(file);
   };
   input.click();
 }
 window.editDog = editDog;
+
+/* ── Photo cropper: drag to position, pinch to zoom ──────────────────────── */
+function showPhotoCropper(dogName, dataUrl) {
+  const img = new Image();
+  img.onload = function() {
+    let scale = 1, ox = 0, oy = 0;
+    const viewSize = 260;
+    // Initial: fit image so shorter side = viewSize
+    const fitScale = viewSize / Math.min(img.width, img.height);
+    scale = fitScale;
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+
+    const cropArea = document.createElement('div');
+    cropArea.style.cssText = `width:${viewSize}px;height:${viewSize}px;border-radius:50%;overflow:hidden;position:relative;border:3px solid #fff;touch-action:none;`;
+
+    const photo = document.createElement('img');
+    photo.src = dataUrl;
+    photo.style.cssText = 'position:absolute;transform-origin:0 0;pointer-events:none;';
+    function updatePhoto() {
+      photo.style.transform = `translate(${ox}px,${oy}px) scale(${scale})`;
+    }
+    updatePhoto();
+    cropArea.appendChild(photo);
+
+    // Drag to position
+    let dragging = false, lastX = 0, lastY = 0;
+    let lastDist = 0;
+    cropArea.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 1) {
+        dragging = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        dragging = false;
+        lastDist = Math.hypot(e.touches[1].clientX - e.touches[0].clientX,
+                              e.touches[1].clientY - e.touches[0].clientY);
+      }
+      e.preventDefault();
+    }, {passive: false});
+    cropArea.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 1 && dragging) {
+        ox += e.touches[0].clientX - lastX;
+        oy += e.touches[0].clientY - lastY;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+        updatePhoto();
+      } else if (e.touches.length === 2) {
+        const dist = Math.hypot(e.touches[1].clientX - e.touches[0].clientX,
+                                e.touches[1].clientY - e.touches[0].clientY);
+        if (lastDist > 0) {
+          const delta = dist / lastDist;
+          scale *= delta;
+          scale = Math.max(fitScale * 0.5, Math.min(fitScale * 5, scale));
+          updatePhoto();
+        }
+        lastDist = dist;
+      }
+      e.preventDefault();
+    }, {passive: false});
+
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:16px;margin-top:24px;';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.style.cssText = 'padding:12px 28px;border:2px solid #fff;background:none;color:#fff;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;';
+    cancelBtn.onclick = () => overlay.remove();
+
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Save';
+    saveBtn.style.cssText = 'padding:12px 28px;border:none;background:var(--accent);color:#fff;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;';
+    saveBtn.onclick = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 120; canvas.height = 120;
+      const ctx = canvas.getContext('2d');
+      const outScale = 120 / viewSize;
+      ctx.drawImage(img, -ox / scale, -oy / scale, viewSize / scale, viewSize / scale, 0, 0, 120, 120);
+      setDogPhoto(dogName, canvas.toDataURL('image/jpeg', 0.85));
+      overlay.remove();
+      renderHub();
+      renderHome();
+    };
+
+    btnRow.appendChild(cancelBtn);
+    btnRow.appendChild(saveBtn);
+
+    const hint = document.createElement('div');
+    hint.textContent = 'Drag to position \u00b7 Pinch to zoom';
+    hint.style.cssText = 'color:rgba(255,255,255,.6);font-size:13px;margin-top:12px;';
+
+    overlay.appendChild(cropArea);
+    overlay.appendChild(btnRow);
+    overlay.appendChild(hint);
+    document.body.appendChild(overlay);
+  };
+  img.src = dataUrl;
+}
+window.showPhotoCropper = showPhotoCropper;
 
 /* ── Legacy compatibility — tab() still called from within tab renderers ─ */
 function showDogPicker() { goHome(); }
