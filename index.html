@@ -868,6 +868,10 @@ function dogAvatarHTML(name, size) {
 
 getActiveDog();
 
+function isDeckDog() {
+  return getActiveDog().toLowerCase() === (DECK.dog || 'reba').toLowerCase();
+}
+
 const TRACKS = [...new Map(DECK.cards.map(c=>[c.track,{tag:c.track,name:c.trackName,color:c.color}])).values()];
 let state = { screen:'home', tab:'week', weekStart:null, dayOpen:null,
               trackFilter:null, openCard:null, bigType:false, logMode:'log', histOpen:{} };
@@ -961,9 +965,9 @@ function renderHub() {
   document.getElementById('hubName').textContent = name;
   document.getElementById('hubAvatar').innerHTML = dogAvatarHTML(name);
 
-  const isDeckDog = name.toLowerCase() === (DECK.dog || 'reba').toLowerCase();
-  const ST = isDeckDog ? (DECK.state || {}) : {};
-  const histAll = isDeckDog ? ((DECK.week && DECK.week.history) || {}) : {};
+  const deckDog = isDeckDog();
+  const ST = deckDog ? (DECK.state || {}) : {};
+  const histAll = deckDog ? ((DECK.week && DECK.week.history) || {}) : {};
   const histDates = Object.keys(histAll).filter(d => histAll[d].length > 0).sort();
   const today = todayCentral();
   let daySub = '';
@@ -973,7 +977,7 @@ function renderHub() {
   }
 
   const currentCards = ST.tracks ? Object.values(ST.tracks).map(t => t.current).filter(Boolean) : [];
-  const sessionCount = isDeckDog ? (DECK.sessions || []).length : 0;
+  const sessionCount = deckDog ? (DECK.sessions || []).length : 0;
 
   const tiles = [
     { icon: '📅', label: 'WEEK', sub: daySub || 'Plan your week', action: "goTab('week')" },
@@ -1157,6 +1161,10 @@ function esc(s){return (s??'').toString().replace(/&/g,'&amp;').replace(/</g,'&l
 /* ------------------------------ CARDS TAB ------------------------------ */
 function renderCards(){
   const v = document.getElementById('vCards');
+  if (!isDeckDog()) {
+    v.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px 16px"><div style="font-size:40px;margin-bottom:12px">🃏</div>No cards for ' + esc(getActiveDog()) + ' yet.</div>';
+    return;
+  }
   if(state.openCard){ v.innerHTML = cardDetail(DECK.cards.find(c=>c.code===state.openCard)); return; }
   let h = '<div class="chips">';
   h += `<button class="chip ${!state.trackFilter?'on':''}" style="${!state.trackFilter?'background:var(--ink)':''}" onclick="haptic();state.trackFilter=null;render()">ALL</button>`;
@@ -1272,6 +1280,10 @@ function badge(st){ const b = BADGE[st]||BADGE.no_checks;
 
 function renderTracks(){
   const v = document.getElementById('vTracks');
+  if (!isDeckDog()) {
+    v.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px 16px"><div style="font-size:40px;margin-bottom:12px">📊</div>No tracks for ' + esc(getActiveDog()) + ' yet.</div>';
+    return;
+  }
   const ST = DECK.state;
   if(!ST){ v.innerHTML = '<div class="asof">This build carries no state.</div>'; return; }
   let h = `<div class="asof"><b>State as of ${esc(ST.as_of)||'unstamped'}</b> — computed from
@@ -1513,15 +1525,15 @@ function slotLine(c, why){
 
 function renderWeek(){
   const v = document.getElementById('vWeek');
+  if (!isDeckDog()) {
+    v.innerHTML = '<div style="text-align:center;color:var(--muted);padding:40px 16px"><div style="font-size:40px;margin-bottom:12px">📅</div>No training plan for ' + esc(getActiveDog()) + ' yet.</div>';
+    return;
+  }
   const today = todayCentral();
-  /* A ROLLING SEVEN DAYS from today, not a Mon-Sun grid. The question this
-     screen answers is "what is coming," and on a Sunday a Mon-Sun week is
-     seven days of history with nothing left to plan. Nav moves by 7. */
   if(!state.weekStart) state.weekStart = today;
   const ws = state.weekStart;
   let h = '';
 
-  /* days since last session */
   const histAll = (DECK.week && DECK.week.history) || {};
   const histDates = Object.keys(histAll).filter(d => histAll[d].length > 0).sort();
   if(histDates.length){
@@ -1783,10 +1795,10 @@ function toggleHistOuting(key){
 window.toggleHistOuting = toggleHistOuting;
 
 function renderHistory(){
-  const outings = DECK.sessions || [];
+  const outings = isDeckDog() ? (DECK.sessions || []) : [];
   let h = '';
   if(!outings.length){
-    h += '<div style="text-align:center;color:var(--muted);padding:30px 0">No sessions recorded yet.</div>';
+    h += `<div style="text-align:center;color:var(--muted);padding:30px 0">${isDeckDog() ? 'No sessions recorded yet.' : 'No sessions for ' + esc(getActiveDog()) + ' yet.'}</div>`;
     return h;
   }
   for(const o of outings){
