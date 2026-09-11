@@ -2382,7 +2382,10 @@ recomputeState();
   }, {passive:true});
   addEventListener('touchend', () => {
     if(y0 === null) return;
-    if(armed){ bar.textContent = 'REFRESHING'; location.reload(); }
+    if(armed){
+      bar.textContent = 'REFRESHING';
+      recomputeState().then(() => { reset(); });
+    }
     else reset();
   }, {passive:true});
   addEventListener('touchcancel', reset, {passive:true});
