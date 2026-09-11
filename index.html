@@ -930,7 +930,11 @@ function goTab(t, titleOverride) {
   state.openCard = null;
   showScreen('tab');
   const titles = {week:'Week', cards:'Cards', tracks:'Tracks', log:'Log'};
-  document.getElementById('tabTitle').textContent = titleOverride || titles[t] || t;
+  const title = titleOverride || titles[t] || t;
+  const tabBar = document.querySelector('.tab-bar');
+  if (tabBar) {
+    tabBar.innerHTML = `<button class="tab-back" onclick="haptic();goHub()" aria-label="Back">&#8249;</button><span class="tab-title" id="tabTitle">${title}</span>`;
+  }
   for (const v of ['vWeek','vCards','vTracks','vLog']) {
     document.getElementById(v).style.display = v === 'v' + t.charAt(0).toUpperCase() + t.slice(1) ? '' : 'none';
   }
@@ -1167,15 +1171,19 @@ const HSTATE = ['sharp','okay','tired','short-tempered'];
 const DSTATE = ['fresh','working','flat','hot'];
 const TOD = ['AM','PM'];
 
-/* tab() is now a thin wrapper — ensures we're on the tab screen and switches views */
+/* tab() is now a thin wrapper — ensures we're on the tab screen and switches views.
+   Called from within tab renderers (e.g. clicking a card in WEEK or TRACKS).
+   Must restore the tab bar first since card detail may have replaced its innerHTML. */
 function tab(t){
+  state.tab = t;
   if (state.screen !== 'tab') {
-    state.tab = t;
     showScreen('tab');
+  }
+  /* Restore the tab bar to its standard layout — card detail may have replaced it */
+  const tabBar = document.querySelector('.tab-bar');
+  if (tabBar) {
     const titles = {week:'Week', cards:'Cards', tracks:'Tracks', log:'Log'};
-    document.getElementById('tabTitle').textContent = titles[t] || t;
-  } else {
-    state.tab = t;
+    tabBar.innerHTML = `<button class="tab-back" onclick="haptic();goHub()" aria-label="Back">&#8249;</button><span class="tab-title" id="tabTitle">${titles[t] || t}</span>`;
   }
   for(const [v,k] of [['vWeek','week'],['vCards','cards'],['vTracks','tracks'],['vLog','log']]){
     document.getElementById(v).style.display = t===k?'':'none';
@@ -1194,11 +1202,6 @@ function renderCards(){
     return;
   }
   if(state.openCard){ v.innerHTML = cardDetail(DECK.cards.find(c=>c.code===state.openCard)); return; }
-  /* Restore normal tab bar when returning to card list */
-  const tabBar = document.querySelector('.tab-bar');
-  if (tabBar) {
-    tabBar.innerHTML = `<button class="tab-back" onclick="haptic();goHub()" aria-label="Back">&#8249;</button><span class="tab-title">Cards</span>`;
-  }
   let h = '<div class="chips">';
   h += `<button class="chip ${!state.trackFilter?'on':''}" style="${!state.trackFilter?'background:var(--ink)':''}" onclick="haptic();state.trackFilter=null;render()">ALL</button>`;
   for(const t of TRACKS)
