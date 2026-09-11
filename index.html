@@ -104,9 +104,37 @@
   .checkrow .num{font-weight:800; white-space:nowrap; font-size:17px;}
   .check-progress{height:4px; background:var(--line); border-radius:2px; flex:0 0 60px;}
   .check-fill{height:100%; background:var(--accent); border-radius:2px; transition:width .3s;}
-  .capnote{background:#FBF6E9; border:1px solid var(--line); border-radius:6px; padding:8px 10px; font-size:14px; margin-top:8px;}
-  .backbtn{margin:0 0 10px; padding:8px 14px; border:1.5px solid var(--ink); background:#fff; border-radius:8px; font-weight:700;}
-  .bigbtn{float:right; margin-bottom:10px; padding:8px 14px; border:1.5px solid var(--line); background:#fff; border-radius:8px; font-weight:700; color:var(--muted);}
+  .capnote{background:#FBF6E9; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:14px; margin-top:10px;}
+  /* card nav */
+  .card-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
+            padding:6px 4px; background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .card-nav-btn{border:0; background:none; font-size:15px; font-weight:600; color:var(--accent);
+                padding:8px 14px; cursor:pointer; min-height:44px;}
+  .card-nav-btn:active{opacity:.6;}
+  .card-nav-cur{font-size:14px; font-weight:800; color:var(--muted); letter-spacing:.04em;}
+  .card-nav-end{width:60px;}
+  /* requires links */
+  .req-link{display:flex; align-items:center; gap:8px; width:100%; padding:10px 0;
+            border:0; background:none; text-align:left; font:inherit; cursor:pointer;
+            border-top:1px solid rgba(0,0,0,.06);}
+  .req-link:first-of-type{border-top:0;}
+  .req-code{font-weight:800; font-size:14px; min-width:48px;}
+  .req-title{flex:1; font-size:15px; color:var(--muted);}
+  .req-arrow{font-size:20px; color:var(--line);}
+  /* check items */
+  .check-item{padding:10px 0; border-top:1px solid rgba(0,0,0,.06);}
+  .check-item:first-child{border-top:0;}
+  .check-top{display:flex; align-items:center; gap:8px;}
+  .check-id{font-weight:800; font-size:14px; min-width:30px;}
+  .check-ratio{font-weight:700; font-size:15px;}
+  .check-pct{margin-left:auto; font-size:13px; color:var(--muted); font-weight:600;}
+  .check-done{margin-left:auto; font-size:16px; color:var(--accent);}
+  .check-label{font-size:15px; color:var(--muted); margin:3px 0 6px 0;}
+  .check-progress{height:4px; background:var(--line); border-radius:2px;}
+  .check-fill{height:100%; background:var(--ink); border-radius:2px; transition:width .3s;}
+  /* equipment tags */
+  .eq-list{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;}
+  .eq-tag{padding:5px 12px; background:var(--bg); border-radius:8px; font-size:13px; font-weight:600;}
   /* log form */
   .fs{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:14px;}
   .fs h3{margin:0 0 4px; font-size:13px; letter-spacing:.12em; color:var(--muted);}
@@ -248,20 +276,36 @@
   .log-toggle button{flex:1; padding:10px 0; border:0; background:#fff; font-size:13px; font-weight:700;
     letter-spacing:.08em; color:var(--muted); cursor:pointer;}
   .log-toggle button.on{background:var(--ink); color:#fff;}
-  /* session history */
-  .sh-outing{background:var(--card); border:1px solid var(--line); border-radius:8px; margin-bottom:8px; overflow:hidden;}
-  .sh-head{padding:11px 12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;}
-  .sh-date{font-weight:800; font-size:14px;}
-  .sh-meta{font-size:12px; color:var(--muted);}
-  .sh-body{padding:0 12px 10px; border-top:1px solid var(--line);}
-  .sh-card{padding:6px 0; border-bottom:1px dashed var(--line);}
-  .sh-card:last-child{border-bottom:0;}
-  .sh-cname{font-weight:700; font-size:13px; letter-spacing:.03em;}
-  .sh-check{display:flex; gap:8px; align-items:baseline; font-size:14px; padding:2px 0 2px 12px;}
+  /* session history — grid of tiles */
+  .hist-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;}
+  .hist-tile{background:var(--card); border:0; border-radius:14px; padding:14px 8px;
+             text-align:center; box-shadow:0 1px 3px rgba(0,0,0,.06); cursor:pointer;
+             font-family:inherit; color:var(--ink); transition:transform .1s ease;}
+  .hist-tile:active{transform:scale(.95);}
+  .hist-tile-day{font-size:12px; color:var(--muted); font-weight:600; letter-spacing:.06em;}
+  .hist-tile-date{font-size:17px; font-weight:800; margin:2px 0;}
+  .hist-tile-tod{font-size:12px; color:var(--muted);}
+  .hist-tile-cards{font-size:11px; color:var(--accent); font-weight:700; margin-top:4px;}
+  /* history detail */
+  .hist-back{border:0; background:none; font-size:16px; font-weight:600; color:var(--accent);
+             padding:8px 0; cursor:pointer; margin-bottom:8px;}
+  .hist-detail-header{margin-bottom:14px;}
+  .hist-detail-date{font-size:22px; font-weight:800;}
+  .hist-detail-meta{font-size:14px; color:var(--muted); margin-top:2px;}
+  .hist-card{background:var(--card); border-radius:14px; padding:14px 16px; margin-bottom:10px;
+             box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .hist-card-head{padding-left:10px; display:flex; align-items:baseline; gap:8px;}
+  .hist-card-code{font-weight:800; font-size:15px;}
+  .hist-card-title{font-size:14px; color:var(--muted);}
+  .hist-card-meta{font-size:13px; color:var(--muted); margin:6px 0 4px 14px;}
+  .hist-check{display:flex; gap:8px; align-items:baseline; font-size:15px; padding:4px 0 4px 14px;}
+  .hist-check-id{font-weight:700; font-size:13px;}
+  .hist-check-label{color:var(--muted); font-size:13px; flex:1;}
+  .hist-observed{font-size:14px; color:var(--muted); font-style:italic; padding:6px 0 0 14px;}
   .sh-score{font-weight:700; font-family:monospace; min-width:44px;}
   .sh-pass{color:#2E7D4F;}
   .sh-fail{color:var(--alert);}
-  .sh-label{color:var(--muted); font-size:13px;}
+  .sh-meta{font-size:12px; color:var(--muted);}
   /* per-card history in detail */
   .ch-row{display:flex; gap:8px; align-items:baseline; padding:4px 0; border-bottom:1px dashed var(--line); font-size:14px;}
   .ch-row:last-child{border-bottom:0;}
@@ -874,7 +918,7 @@ function isDeckDog() {
 
 const TRACKS = [...new Map(DECK.cards.map(c=>[c.track,{tag:c.track,name:c.trackName,color:c.color}])).values()];
 let state = { screen:'home', tab:'week', weekStart:null, dayOpen:null,
-              trackFilter:null, openCard:null, bigType:false, logMode:'log', histOpen:{} };
+              trackFilter:null, openCard:null, bigType:false, logMode:'log', histOpen:{}, histDetail:null };
 
 /* ── Navigation: Home → Hub → Tab → Detail ─────────────────────────────── */
 function showScreen(name) {
@@ -1186,50 +1230,84 @@ function cardDetail(c){
   const i = list.findIndex(x => x.code===c.code);
   const prev = i > 0 ? list[i-1] : null;
   const next = i < list.length-1 ? list[i+1] : null;
-  /* TWO-ROW BREADCRUMB — HANDOFF.md section 5, re-derived from the spec after
-     patch_060.py was lost. Row one is where you came FROM, row two is where you
-     can go NEXT, and the two were previously mixed into one row of four buttons
-     that all looked alike. The CURRENT card is dead text, deliberately: a button
-     that returns you to the screen you are already on reads as broken. */
-  let h = `<div class="crumb1">
-      <button class="backbtn" onclick="state.trackFilter=null;state.openCard=null;render()">&larr; ALL</button>
-      <button class="backbtn" onclick="state.trackFilter='${c.track}';state.openCard=null;render()">&larr; ${c.track}</button>
-      <button class="bigbtn" onclick="state.bigType=!state.bigType;render()">A${state.bigType?'a':'A'}</button>
-    </div>`;
-  h += `<div class="crumb2">` +
-    (prev ? `<button class="crumbbtn" onclick="state.openCard='${prev.code}';render()">&lsaquo; ${prev.code}</button>`
-          : `<span class="crumbend">&lsaquo;</span>`) +
-    `<span class="crumbnow">${c.code}</span>` +
-    (next ? `<button class="crumbbtn" onclick="state.openCard='${next.code}';render()">${next.code} &rsaquo;</button>`
-          : `<span class="crumbend">&rsaquo;</span>`) +
+  const cs = (DECK.state && DECK.state.cards) ? DECK.state.cards[c.code] : null;
+
+  /* ── prev / next nav ── */
+  let h = `<div class="card-nav">` +
+    (prev ? `<button class="card-nav-btn" onclick="haptic();state.openCard='${prev.code}';render()">&#8249; ${prev.code}</button>`
+          : `<span class="card-nav-end"></span>`) +
+    `<span class="card-nav-cur">${c.code}</span>` +
+    (next ? `<button class="card-nav-btn" onclick="haptic();state.openCard='${next.code}';render()">${next.code} &#8250;</button>`
+          : `<span class="card-nav-end"></span>`) +
     `</div>`;
+
+  /* ── card header ── */
   h += `<div class="detail ${state.bigType?'big':''}"><div class="head" style="background:${accent}">
         <div class="code">${c.code} · ${esc(c.trackName)}${c.trigger?' · '+esc(c.trigger):''}</div>
-        <div class="title">${esc(c.title)}</div></div>`;
-  if(c.diagram) h += `<div class="sec"><button class="dgmbtn" onclick="openDiagram('${c.diagram}','${c.code}')">DIAGRAM &nbsp;&rarr;</button>
-    <div class="why">Full screen. Turn the phone sideways — a 6&times;4 back read portrait loses every label.</div></div>`;
+        <div class="title">${esc(c.title)}</div>`;
+  if (cs) h += `<div style="margin-top:6px">${badge(cs.status)}</div>`;
+  h += `</div>`;
+
+  /* ── requires (tappable links) ── */
+  if (c.requires && c.requires.length) {
+    const blocked = cs && cs.status === 'locked';
+    h += `<div class="sec" style="background:${blocked?'#FDF0EE':'#FBF6E9'}">
+      <h4>${blocked ? 'BLOCKED BY' : 'REQUIRES'}</h4>`;
+    for (const r of c.requires) {
+      const rc = DECK.cards.find(x => x.code === r);
+      h += `<button class="req-link" onclick="haptic();state.openCard='${esc(r)}';render()">
+        <span class="req-code">${esc(r)}</span>
+        <span class="req-title">${rc ? esc(rc.title) : ''}</span>
+        <span class="req-arrow">&#8250;</span></button>`;
+    }
+    h += `</div>`;
+  }
+
+  if(c.diagram) h += `<div class="sec"><button class="dgmbtn" onclick="openDiagram('${c.diagram}','${c.code}')">VIEW DIAGRAM &nbsp;&#8250;</button></div>`;
   if(c.body) h += `<div class="sec"><div class="txt">${esc(c.body.trim())}</div></div>`;
   if(c.drill) h += `<div class="sec"><h4>DRILL</h4><div class="txt">${esc(c.drill.trim())}</div></div>`;
   if(c.pass) h += `<div class="sec"><h4>PASS</h4><div class="txt">${esc(c.pass.trim())}</div></div>`;
+
+  /* ── checks with progress bars ── */
   if(c.checks.length){
     h += `<div class="sec"><h4>CHECKS</h4>`;
-    for(const k of c.checks)
-      h += `<div class="checkrow"><span class="num">${k.hits}/${k.of}${k.sessions?' ×'+k.sessions+'s':''}</span><span>${esc(k.label)}</span></div>`;
+    for(const k of c.checks){
+      const ck = cs ? (cs.checks||[]).find(x => x.id === k.id) : null;
+      const status = ck ? ck.status : 'not_recorded';
+      const banked = status === 'banked' || status === 'banked_assertion';
+      const needSess = k.sessions || 1;
+      const haveSess = ck ? (ck.banked_sessions || 0) : 0;
+      const pct = needSess > 0 ? Math.min(100, Math.round(haveSess / needSess * 100)) : 0;
+      h += `<div class="check-item">
+        <div class="check-top">
+          <span class="check-id">${esc(k.id)}</span>
+          <span class="check-ratio">${k.hits}/${k.of}${needSess>1?' × '+needSess+'s':''}</span>
+          ${banked ? '<span class="check-done">✓</span>' : `<span class="check-pct">${haveSess}/${needSess}</span>`}
+        </div>
+        <div class="check-label">${esc(k.label)}</div>
+        <div class="check-progress"><div class="check-fill" style="width:${pct}%;${banked?'background:var(--accent)':''}"></div></div>
+      </div>`;
+    }
     h += `</div>`;
   }
+
+  /* ── if/then ── */
   if(c.ifthen.length){
     h += `<div class="sec"><h4>IF / THEN</h4>`;
     for(const r of c.ifthen) h += `<div class="ifrow"><div class="if">${esc(r[0])}</div><div>${esc(r[1])}</div></div>`;
     h += `</div>`;
   }
+
+  /* ── equipment / caps / notes ── */
   if(c.session_cap || c.equipment.length || c.blocked_note){
     h += `<div class="sec">`;
-    if(c.equipment.length) h += `<h4>EQUIPMENT</h4><div class="txt">${esc(c.equipment.join(' · '))}</div>`;
+    if(c.equipment.length) h += `<h4>EQUIPMENT</h4><div class="eq-list">${c.equipment.map(e => `<span class="eq-tag">${esc(e)}</span>`).join('')}</div>`;
     if(c.session_cap) h += `<div class="capnote">CAP: ${esc(c.session_cap.note || (c.session_cap.reps+' reps max'))}</div>`;
     if(c.blocked_note) h += `<div class="capnote">${esc(c.blocked_note)}</div>`;
     h += `</div>`;
   }
-  /* per-card session history */
+
+  /* ── per-card session history ── */
   const cardOutings = (DECK.sessions||[]).filter(o =>
     (o.cards||[]).some(x => x.card === c.code));
   if(cardOutings.length){
@@ -1801,39 +1879,59 @@ function renderHistory(){
     h += `<div style="text-align:center;color:var(--muted);padding:30px 0">${isDeckDog() ? 'No sessions recorded yet.' : 'No sessions for ' + esc(getActiveDog()) + ' yet.'}</div>`;
     return h;
   }
-  for(const o of outings){
-    const key = o.date + '|' + (o.tod||'');
-    const open = state.histOpen[key];
+
+  /* If a specific outing is open, show detail view */
+  if (state.histDetail != null) {
+    const o = outings[state.histDetail];
+    if (!o) { state.histDetail = null; return renderHistory(); }
+    h += `<button class="hist-back" onclick="haptic();state.histDetail=null;render()">&#8249; All Sessions</button>`;
     const loc = o.location || '';
     const meta = [o.tod, loc, o.length_min ? o.length_min+'m' : '', o.temp_f ? o.temp_f+'°F' : ''].filter(Boolean).join(' · ');
-    const ncards = o.cards ? o.cards.length : 0;
-    h += `<div class="sh-outing">`;
-    h += `<div class="sh-head" onclick="haptic();toggleHistOuting('${key}')">
-      <div><div class="sh-date">${esc(o.date)}</div><div class="sh-meta">${esc(meta)}</div></div>
-      <div class="sh-meta">${ncards} card${ncards!==1?'s':''} ${open?'▾':'▸'}</div></div>`;
-    if(open && o.cards){
-      h += '<div class="sh-body">';
+    h += `<div class="hist-detail-header">
+      <div class="hist-detail-date">${esc(o.date)}</div>
+      <div class="hist-detail-meta">${esc(meta)}</div></div>`;
+    if (o.cards) {
       for(const c of o.cards){
         const dc = DECK.cards.find(x=>x.code===c.card);
-        h += `<div class="sh-card"><div class="sh-cname" style="color:${dc?dc.color:'var(--ink)'}">${esc(c.card)}${dc?' · '+esc(dc.title):''}</div>`;
-        if(c.dog_state) h += `<div class="sh-meta">dog: ${esc(c.dog_state)}${c.assist && c.assist!=='none' ? ' · assist: '+esc(c.assist) : ''}</div>`;
+        h += `<div class="hist-card">
+          <div class="hist-card-head" style="border-left:4px solid ${dc?dc.color:'var(--ink)'}">
+            <span class="hist-card-code">${esc(c.card)}</span>
+            <span class="hist-card-title">${dc ? esc(dc.title) : ''}</span></div>`;
+        if(c.dog_state) h += `<div class="hist-card-meta">Dog: ${esc(c.dog_state)}${c.assist && c.assist!=='none' ? ' · Assist: '+esc(c.assist) : ''}</div>`;
         for(const k of (c.checks||[])){
           const spec = dc ? dc.checks.find(s=>s.id===k.id) : null;
           const threshold = spec ? spec.hits : null;
           const met = threshold !== null && k.hits >= threshold;
-          h += `<div class="sh-check"><span class="sh-score ${met?'sh-pass':'sh-fail'}">${k.hits}/${k.of}</span>`;
-          h += `<span>${esc(k.id)}</span>`;
-          if(spec) h += `<span class="sh-label">${esc(spec.label)}</span>`;
-          if(!k.counts) h += `<span class="sh-meta">(no-count)</span>`;
-          h += `</div>`;
+          h += `<div class="hist-check">
+            <span class="sh-score ${met?'sh-pass':'sh-fail'}">${k.hits}/${k.of}</span>
+            <span class="hist-check-id">${esc(k.id)}</span>
+            ${spec?`<span class="hist-check-label">${esc(spec.label)}</span>`:''}
+            ${!k.counts?'<span class="sh-meta">(no-count)</span>':''}
+          </div>`;
         }
-        if(c.observed) h += `<div class="sh-meta" style="padding:4px 0 0 12px;font-style:italic">${esc(c.observed)}</div>`;
+        if(c.observed) h += `<div class="hist-observed">${esc(c.observed)}</div>`;
         h += `</div>`;
       }
-      h += '</div>';
     }
-    h += '</div>';
+    return h;
   }
+
+  /* Grid of session tiles */
+  h += '<div class="hist-grid">';
+  for(let i = 0; i < outings.length; i++){
+    const o = outings[i];
+    const ncards = o.cards ? o.cards.length : 0;
+    const d = new Date(o.date + 'T12:00:00');
+    const dayName = d.toLocaleDateString('en-US', {weekday:'short'});
+    const monthDay = d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+    h += `<button class="hist-tile" onclick="haptic();state.histDetail=${i};render()">
+      <div class="hist-tile-day">${esc(dayName)}</div>
+      <div class="hist-tile-date">${esc(monthDay)}</div>
+      <div class="hist-tile-tod">${esc(o.tod || '')}</div>
+      <div class="hist-tile-cards">${ncards} card${ncards!==1?'s':''}</div>
+    </button>`;
+  }
+  h += '</div>';
   return h;
 }
 
